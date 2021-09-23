@@ -13,6 +13,7 @@ import {
   startMove,
   cloneSubstationElement,
   styles,
+  renderPtrContainer,
 } from './foundation.js';
 import { newActionEvent, newWizardEvent } from '../foundation.js';
 
@@ -120,7 +121,7 @@ export class VoltageLevelEditor extends LitElement {
           @click=${() => this.remove()}
         ></mwc-icon-button>
       </abbr>
-      ${this.renderIedContainer()}
+      ${this.renderIedContainer()}${renderPtrContainer(this.element)}
       <div id="bayContainer" slot="container">
         ${Array.from(this.element?.querySelectorAll(selectors.Bay) ?? []).map(
           bay => html`<bay-editor

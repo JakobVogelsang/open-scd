@@ -8,7 +8,12 @@ import {
 } from 'lit-element';
 import { translate } from 'lit-translate';
 
-import { startMove, styles, cloneSubstationElement } from './foundation.js';
+import {
+  startMove,
+  styles,
+  cloneSubstationElement,
+  renderPtrContainer,
+} from './foundation.js';
 import {
   getChildElementsByTagName,
   newActionEvent,
@@ -98,7 +103,7 @@ export class BayEditor extends LitElement {
           @click=${() => this.remove()}
         ></mwc-icon-button>
       </abbr>
-      ${this.renderIedContainer()}
+      ${this.renderIedContainer()} ${renderPtrContainer(this.element)}
       <div slot="container" id="ceContainer">
         ${Array.from(
           getChildElementsByTagName(this.element, 'ConductingEquipment')

@@ -14,6 +14,7 @@ import {
   selectors,
   startMove,
   styles,
+  renderPtrContainer,
 } from './foundation.js';
 
 import { wizards } from '../wizards/wizard-library.js';
@@ -75,6 +76,7 @@ export class SubstationEditor extends LitElement {
           .element=${this.element}
           >
           ${this.renderIedContainer()}
+          ${renderPtrContainer(this.element)}
           <abbr slot="header" title="${translate('lnode.tooltip')}">
             <mwc-icon-button
               icon="account_tree"
