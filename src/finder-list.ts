@@ -154,7 +154,10 @@ export class FinderList extends LitElement {
           html`${until(
             dir.then(
               ({ path, entries, header }) =>
-                html`${header} ${this.renderDirectory(path, entries)}`
+                html`${header}
+                ${entries.length !== 0
+                  ? this.renderDirectory(path, entries)
+                  : html``}`
             ),
             html`<h2>${translate('loading')}</h2>`
           )}`
