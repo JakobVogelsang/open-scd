@@ -66,8 +66,6 @@ function getReader(server: Element): (path: string[]) => Promise<Directory> {
     const [tagName, id] = path[path.length - 1]?.split(': ', 2);
     const element = server.ownerDocument.querySelector(selector(tagName, id));
 
-    console.warn(element, tagName, id);
-
     if (!element)
       return { path, header: html`<p>${translate('error')}</p>`, entries: [] };
 
@@ -135,6 +133,10 @@ function addDataAction(parent: Element): WizardActor {
   };
 }
 
+function getDisplayString(entry: string): string {
+  return entry.replace(/^.*>/, '');
+}
+
 function selectDataSetWizard(element: Element): Wizard | undefined {
   const server = element.closest('Server');
   if (!server || !(typeof identity(server) === 'string')) return; // No identifiable Server
@@ -148,6 +150,8 @@ function selectDataSetWizard(element: Element): Wizard | undefined {
       },
       content: [
         html`<finder-list
+          .getTitle=${(path: string[]) => path[path.length - 1]}
+          .getDisplayString=${getDisplayString}
           multi
           .paths=${[['Server: ' + identity(server)]]}
           .read=${getReader(server)}
