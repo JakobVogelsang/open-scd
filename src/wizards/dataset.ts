@@ -5,16 +5,31 @@ import { Directory, FinderList } from '../finder-list.js';
 import {
   cloneElement,
   createElement,
-  EditorAction,
   getValue,
   identity,
   newWizardEvent,
+  selector,
   Wizard,
   WizardAction,
   WizardActor,
   WizardInput,
 } from '../foundation.js';
-import { shortTags, tags } from './foundation.js';
+
+function getChildren(parent: Element): Element[] {
+  if (['LDevice', 'Server'].includes(parent.tagName))
+    return Array.from(parent.children);
+
+  const id =
+    parent.tagName === 'LN' || parent.tagName === 'LN0'
+      ? parent.getAttribute('lnType')
+      : parent.getAttribute('type');
+
+  return Array.from(
+    parent.ownerDocument.querySelectorAll(
+      `LNodeType[id="${id}"] > DO, DOType[id="${id}"] > SDO, DOType[id="${id}"] > DA, DAType[id="${id}"] > BDA`
+    )
+  );
+}
 
 export function updateDataSetAction(element: Element): WizardActor {
   return (inputs: WizardInput[]): WizardAction[] => {
@@ -46,22 +61,21 @@ export function updateDataSetAction(element: Element): WizardActor {
   };
 }
 
-function getChildIds(element: Element): (path: string[]) => Promise<Directory> {
-  const root = element.closest('IED')!;
+function getReader(server: Element): (path: string[]) => Promise<Directory> {
   return async (path: string[]) => {
-    const shortTag = path[path.length - 1]?.split(':')[0];
-    const tagName = shortTags[shortTag];
-    const parent = tags[tagName]?.getElement(path, root) ?? null;
-    const childen = tags[tagName]?.getChildren(parent!) ?? [];
+    const [tagName, id] = path[path.length - 1]?.split(': ', 2);
+    const element = server.ownerDocument.querySelector(selector(tagName, id));
+
+    console.warn(element, tagName, id);
+
+    if (!element)
+      return { path, header: html`<p>${translate('error')}</p>`, entries: [] };
 
     return {
       path,
       header: html``,
-      entries: childen.map(
-        child =>
-          `${tags[child.tagName]?.shortTag}:${
-            tags[child.tagName]?.getIdentity(child) ?? ''
-          }`
+      entries: getChildren(element).map(
+        child => `${child.tagName}: ${identity(child)}`
       ),
     };
   };
@@ -121,7 +135,9 @@ function addDataAction(parent: Element): WizardActor {
   };
 }
 
-function selectDataSetWizard(element: Element): Wizard {
+function selectDataSetWizard(element: Element): Wizard | undefined {
+  const server = element.closest('Server');
+  if (!server || !(typeof identity(server) === 'string')) return; // No identifiable Server
   return [
     {
       title: 'add data',
@@ -133,8 +149,8 @@ function selectDataSetWizard(element: Element): Wizard {
       content: [
         html`<finder-list
           multi
-          .path=${['S:Server']}
-          .read=${getChildIds(element)}
+          .paths=${[['Server: ' + identity(server)]]}
+          .read=${getReader(server)}
         ></finder-list>`,
       ],
     },
