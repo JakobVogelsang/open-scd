@@ -79,27 +79,44 @@ function getReader(server: Element): (path: string[]) => Promise<Directory> {
   };
 }
 
-function createFCDAformPath(parent: Element, path: string[]): Element {
-  const iedName = parent.closest('IED')?.getAttribute('name') ?? null;
-  const ldInst = path[1].split(':')[1];
-  const prefix = path[2].split(':')[1].split(' ')[0];
-  const lnClass = path[2].split(':')[1].split(' ')[1];
-  const lnInst = path[2].split(':')[1].split(' ')[2];
+function createFCDAfromPath(
+  parent: Element,
+  path: string[]
+): Element | undefined {
+  const lnSegment = path.find(segment => segment.startsWith('LN'));
+  if (!lnSegment) return;
+
+  const [lnTag, lnId] = lnSegment.split(': ');
+
+  const ln = parent.ownerDocument.querySelector(selector(lnTag, lnId));
+  if (!ln) return;
+
+  const iedName = ln.closest('IED')?.getAttribute('name') ?? null;
+  const ldInst = ln.closest('LDevice')?.getAttribute('inst') ?? null;
+  const prefix = ln.getAttribute('prefix') ?? '';
+  const lnClass = ln.getAttribute('lnClass');
+  const lnInst = ln.getAttribute('inst') ?? '';
+
   let doName = '';
   let daName = '';
   let fc = '';
-  for (const pathElem of path.slice(2)) {
-    const [tagName, indentity] = pathElem.split(':');
-    if (tagName === 'DO') doName = indentity;
 
-    if (tagName === 'SDO') doName = doName + '.' + indentity;
+  for (const segment of path) {
+    const [tagName, id] = segment.split(': ');
+    if (!['DO', 'DA', 'SDO', 'BDA'].includes(tagName)) continue;
+
+    const element = parent.ownerDocument.querySelector(selector(tagName, id));
+    if (!element) return;
+
+    const name = element.getAttribute('name') ?? '';
+
+    if (tagName === 'DO') doName = name;
+    if (tagName === 'SDO') doName = doName + '.' + name;
     if (tagName === 'DA') {
-      const [_0, name, _2, _3, FC] =
-        indentity.match(/([a-zA-Z][0-9A-Za-z]*)([ ]?)(\[?([A-Z]*)\]?)/) ?? [];
       daName = name;
-      fc = FC;
+      fc = element.getAttribute('fc') ?? '';
     }
-    if (tagName === 'BDA') daName = daName + '.' + indentity;
+    if (tagName === 'BDA') daName = daName + '.' + name;
   }
 
   return createElement(parent.ownerDocument, 'FCDA', {
@@ -120,14 +137,19 @@ function addDataAction(parent: Element): WizardActor {
     const paths = finder?.paths ?? [];
 
     const actions = [];
-    for (const path of paths)
+    for (const path of paths) {
+      const element = createFCDAfromPath(parent, path);
+
+      if (!element) continue;
+
       actions.push({
         new: {
           parent,
-          element: createFCDAformPath(parent, path),
+          element,
           reference: null,
         },
       });
+    }
 
     return actions;
   };
