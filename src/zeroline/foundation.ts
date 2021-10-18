@@ -99,13 +99,20 @@ export function getAttachedIeds(
   };
 }
 
-export function renderPtrContainer(element: Element) : TemplateResult {
-  const powerTransformers = Array.from(element.children).filter(child => child.tagName === 'PowerTransformer');
+export function renderPtrContainer(element: Element): TemplateResult {
+  const powerTransformers = Array.from(element.children).filter(
+    child => child.tagName === 'PowerTransformer'
+  );
   return powerTransformers?.length > 0
-  ? html `<div id="ptrcontainer">
-           ${powerTransformers.map(ptr => html`<power-transformer-editor .element=${ptr}></power-transformer-editor>`)}        
-          </div>` 
-          : html``; 
+    ? html`<div id="ptrcontainer" slot="container">
+        ${powerTransformers.map(
+          ptr =>
+            html`<power-transformer-editor
+              .element=${ptr}
+            ></power-transformer-editor>`
+        )}
+      </div>`
+    : html``;
 }
 
 export type ElementEditor = Element & {
