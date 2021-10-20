@@ -1,5 +1,6 @@
 import { expect, fixture, html } from '@open-wc/testing';
 import { Create, isCreate, WizardInput } from '../../../src/foundation.js';
+import { WizardTextField } from '../../../src/wizard-textfield.js';
 import {
   createPowerTransformerAction,
   createPowerTransformerWizard,
@@ -14,7 +15,7 @@ describe('powertransformer wizards', () => {
 
   beforeEach(async () => {
     element = await fixture(html`<mock-wizard></mock-wizard>`);
-    doc = await fetch('/base/test/testfiles/wizards/gsecontrol.scd')
+    doc = await fetch('/base/test/testfiles/wizards/powertransformers.scd')
       .then(response => response.text())
       .then(str => new DOMParser().parseFromString(str, 'application/xml'));
   });
@@ -47,6 +48,19 @@ describe('powertransformer wizards', () => {
     });
   });
 
+  describe('create PowerTransformer wizard', () => {
+     beforeEach(async () => {
+       const wizard = createPowerTransformerWizard(
+         doc.querySelector('Bay')!
+       )!;
+       element.workflow.push(wizard);
+       await element.requestUpdate();
+     })
+     it('looks like the latest snapshot', () => {
+       expect(element.wizardUI.dialog).to.equalSnapshot();
+     });
+  });
+
   describe('create action', () => {
     let parent: Element;
     let inputs: WizardInput[];
@@ -66,6 +80,7 @@ describe('powertransformer wizards', () => {
       element.workflow.push(wizard!);
       await element.requestUpdate();
       inputs = Array.from(element.wizardUI.inputs);
+      await element.requestUpdate();
     });
 
     it('creates a PowerTransformer element', () => {
@@ -81,9 +96,13 @@ describe('powertransformer wizards', () => {
       expect(createAction.new.element).to.have.attribute('type', 'PTR');
     });
 
-    it('creates yet another PowerTransformer element', () => {
+    
+    it('creates yet another PowerTransformer element', async() => {
       inputs[0].value = 'myOtherNewPTR';
-      inputs[1].value = 'myOtherDesc';
+      const desc = <WizardTextField>inputs[1];
+      desc.nullSwitch?.click();
+      desc.value = 'myOtherDesc';
+      await desc.requestUpdate();
 
       const editorAction = createPowerTransformerAction(parent);
       expect(editorAction(inputs, newWizard()).length).to.equal(1);
