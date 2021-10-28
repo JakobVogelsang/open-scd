@@ -36,7 +36,7 @@ import './wizard-dialog.js';
 import './wizard-textfield.js';
 import './wizard-select.js';
 import './finder-pane.js';
-import './action-component.js';
+import './action-icon.js';
 import './zeroline/power-transformer-editor.js';
 
 import { newOpenDocEvent, newPendingStateEvent } from './foundation.js';

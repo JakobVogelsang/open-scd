@@ -23,12 +23,13 @@ export class PowerTransformer extends LitElement {
 
     render(): TemplateResult {
         return html`
-           <action-component name=${this.name} size="large" .icon=${voltageTransformerIcon}>
-            <mwc-fab mini icon="edit" @click=${() => this.onEditWizard()}></mwc-fab>
-            <mwc-fab mini icon="delete"></mwc-fab>
-            <mwc-fab mini icon="account_tree"></mwc-fab>
-            <mwc-fab mini icon="forward"></mwc-fab>
-           </action-component>
+           <action-icon name=${this.name}>
+            ${voltageTransformerIcon}
+            <mwc-fab slot="action" mini icon="edit" @click=${() => this.onEditWizard()}></mwc-fab>
+            <mwc-fab slot="action" mini icon="delete"></mwc-fab>
+            <mwc-fab slot="action" mini icon="account_tree"></mwc-fab>
+            <mwc-fab slot="action" mini icon="forward"></mwc-fab>
+           </action-icon>
         `;
     }
 
