@@ -252,6 +252,24 @@ snapshots["open-scd looks like its snapshot"] =
       <oscd-plugin2a662bacb120083f>
       </oscd-plugin2a662bacb120083f>
     </mwc-list-item>
+    <mwc-list-item
+      aria-disabled="true"
+      class="middle"
+      disabled=""
+      graphic="icon"
+      iconid="edit"
+      mwc-list-item=""
+      tabindex="-1"
+    >
+      <mwc-icon slot="graphic">
+        edit
+      </mwc-icon>
+      <span>
+        Export Settings
+      </span>
+      <oscd-pluginccbf44c0e736b6c6>
+      </oscd-pluginccbf44c0e736b6c6>
+    </mwc-list-item>
     <li
       divider=""
       padded=""
@@ -907,6 +925,22 @@ snapshots["open-scd looks like its snapshot"] =
         merge_type
       </mwc-icon>
       Update Substation
+    </mwc-check-list-item>
+    <mwc-check-list-item
+      aria-disabled="false"
+      class="official"
+      graphic="control"
+      hasmeta=""
+      left=""
+      mwc-list-item=""
+      selected=""
+      tabindex="-1"
+      value="/src/menu/ExportSettings.js"
+    >
+      <mwc-icon slot="meta">
+        edit
+      </mwc-icon>
+      Export Settings
     </mwc-check-list-item>
     <li
       divider=""

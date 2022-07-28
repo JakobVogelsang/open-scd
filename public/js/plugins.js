@@ -148,6 +148,15 @@ export const officialPlugins = [
     position: 'middle'
   },
   {
+    name: 'Export Settings',
+    src: '/src/menu/ExportSettings.js',
+    icon: 'edit',
+    default: true,
+    kind: 'menu',
+    requireDoc: true,
+    position: 'middle'
+  },
+  {
     name: 'Cleanup',
     src: '/src/editors/Cleanup.js',
     icon: 'cleaning_services',
